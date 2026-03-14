@@ -38,21 +38,53 @@
  *   // => { name: "Jadeja", strikeRate: 175, economy: 7.5, battingAvg: 28.57, isAllRounder: false }
  */
 export const calcStrikeRate = (runs, balls) => {
-  // Your code here
+  // Agar balls <= 0 ya runs < 0, return 0
+  if(typeof balls !== "number" || !balls || balls < 0 || typeof runs !== "number" || !runs || runs < 0) return 0
+  
+  // Strike rate = (runs / balls) * 100, rounded to 2 decimal places
+  return parseFloat((runs*100/balls).toFixed(2))
 };
 
 export const calcEconomy = (runsConceded, overs) => {
-  // Your code here
+  //  Agar overs <= 0 ya runsConceded < 0, return 0
+  if(typeof overs !== "number" || !overs || overs < 0 || typeof runsConceded !== "number" || !runsConceded || runsConceded < 0 ) return 0
+  
+  //  Economy = runsConceded / overs, rounded to 2 decimal places
+  return parseFloat((runsConceded/overs).toFixed(2))
 };
 
 export const calcBattingAvg = (totalRuns, innings, notOuts = 0) => {
-  // Your code here
+  //  Default notOuts = 0
+  //  Agar innings - notOuts <= 0, return 0
+  if(typeof totalRuns !== "number" || !totalRuns || totalRuns < 0 || typeof innings !== "number" || !innings || innings < 0 || typeof notOuts !== "number" || notOuts < 0) return 0
+
+  if(innings-notOuts <= 0) return 0
+  
+  //  Batting avg = totalRuns / (innings - notOuts), rounded to 2 decimal places
+  return parseFloat((totalRuns / (innings - notOuts)).toFixed(2))
 };
 
 export const isAllRounder = (battingAvg, economy) => {
-  // Your code here
+  if(typeof battingAvg !== "number" || battingAvg < 0 || typeof economy !== "number" || economy < 0  ) return false
+  
+  // Return true agar battingAvg > 30 AND economy < 8
+  if(battingAvg > 30 && economy < 8) return true
+
+  return false
 };
 
 export const getPlayerCard = (player) => {
-  // Your code here
+  // player object: { name, runs, balls, totalRuns, innings, notOuts, runsConceded, overs }
+  // Return: { name, strikeRate, economy, battingAvg, isAllRounder }
+  // Use the above functions internally
+  // Agar player null/undefined hai ya name missing, return null
+  if(typeof player !== "object" || Array.isArray(player) || !player || !player.name || typeof player.name !== "string") return null
+
+  return {
+    name : player.name,
+    strikeRate:calcStrikeRate(player.runs, player.balls),
+    economy:calcEconomy(player.runsConceded, player.overs),
+    battingAvg: calcBattingAvg(player.totalRuns, player.innings, player.notOuts),
+    isAllRounder: isAllRounder(calcBattingAvg(player.totalRuns, player.innings, player.notOuts), calcEconomy(player.runsConceded, player.overs))
+  }
 };

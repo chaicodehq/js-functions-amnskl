@@ -32,5 +32,48 @@
  *   // => { type: "plain", quantity: 1, pricePerDosa: 40, total: 40 }
  */
 export function calculateDosaOrder(type, quantity = 1, isSpicy = false) {
-  // Your code here
+
+  // Validation:
+  //   - Agar type string nahi hai ya unknown type hai, return null
+  if(typeof type !== "string" || !type) return null
+  //   - Agar quantity positive number nahi hai (<=0 ya NaN), return null
+  if(typeof quantity !== "number" || !Number.isInteger(quantity) || quantity <= 0) return null
+
+  // plain=40, masala=60, onion=50, butter=70, paper=90, cheese=80
+  let basePrice;
+  switch (type) {
+    case "plain":
+      basePrice = 40;
+      break;
+      
+      case "masala":
+      basePrice = 60;
+      break;
+      
+      case "onion":
+      basePrice = 50;
+      break;
+      
+      case "butter":
+      basePrice = 70;
+      break;
+      
+      case "paper":
+      basePrice = 90;
+      break;
+      
+      case "cheese":
+      basePrice = 80;
+      break;
+  
+    default:
+      return null
+  }
+
+  if(isSpicy){
+    basePrice += 10;
+  }
+
+  return { type, quantity, pricePerDosa : basePrice, total : basePrice * quantity }
+
 }

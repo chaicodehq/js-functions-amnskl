@@ -46,17 +46,66 @@
  *   // => "Amit is coming!"
  */
 export function processGuests(guests, filterFn) {
-  // Your code here
+  //  guests: array of guest objects
+  //  Agar guests not array or filterFn not function, return []
+  if (!Array.isArray(guests) || guests.length === 0 || typeof filterFn !== "function") return []
+  //  filterFn: callback function that takes a guest, returns true/false
+  //  Returns: array of guests for which filterFn returned true
+  const arr = []
+
+  for(let i = 0; i<guests.length; i++){
+    if(filterFn(guests[i])){
+      arr.push(guests[i])
+    }
+  }
+  return arr;
 }
 
 export function notifyGuests(guests, notifyCallback) {
-  // Your code here
+  //  Agar guests not array or notifyCallback not function, return []
+  if(!Array.isArray(guests) || guests.length === 0 || typeof notifyCallback !== "function") return []
+
+  const arr = [];
+  //  Calls notifyCallback(guest) for EACH guest in array
+  guests.forEach(element => {
+    //  Collects return values from each callback call
+    arr.push(notifyCallback(element))
+  })
+  //  Returns: array of callback results
+  return arr;
 }
 
 export function handleRSVP(guest, onAccept, onDecline) {
-  // Your code here
+  //  Agar guest null/undefined or callbacks not functions, return null
+  if(typeof guest !== "object" || Array.isArray(guest) || !guest || typeof onAccept !== "function"|| typeof onDecline !== "function")
+    return null
+  //  If guest.rsvp === "yes", call onAccept(guest) and return its result
+  if(guest.rsvp === "yes"){
+    return onAccept(guest)
+    //  If guest.rsvp === "no", call onDecline(guest) and return its result
+  } else if (guest.rsvp === "no") {
+    return onDecline(guest)
+  } 
+  //  If guest.rsvp is anything else, return null
+  return null
+
 }
 
 export function transformGuestList(guests, ...transformFns) {
-  // Your code here
+  //  Agar guests not array, return []
+  if(!Array.isArray(guests) || guests.length === 0)
+    return []
+  
+  let arr = [...guests];
+  
+  //  Each transformFn takes an array and returns a new array
+  //  Apply transforms LEFT to RIGHT (first fn first)
+  transformFns.forEach(fn => {
+    arr  = fn(arr)
+  })
+  //  Return the final transformed array
+  return arr;
 }
+
+
+

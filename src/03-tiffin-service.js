@@ -38,15 +38,85 @@
  *
  *   combinePlans(plan1, plan2, plan3)
  *   // => { totalCustomers: 3, totalRevenue: 7200, mealBreakdown: { veg: 2, nonveg: 1 } }
- */
+*/
 export function createTiffinPlan({ name, mealType = "veg", days = 30 } = {}) {
-  // Your code here
+  //  Destructured parameter with defaults!
+  //  Agar name missing/empty, return null
+  if(typeof name !== "string" || !name)
+    return null
+  //  Meal prices per day: veg=80, nonveg=120, jain=90
+  //  Agar mealType unknown hai, return null
+  let mealPrice
+  switch (mealType) {
+    case "veg":
+      mealPrice = 80;
+      break;
+  
+    case "nonveg":
+      mealPrice = 120
+      break;
+  
+    case "jain":
+      mealPrice = 90;
+      break;
+  
+    default:
+      return null
+  }
+  //  Return: { name, mealType, days, dailyRate, totalCost }
+  return {
+    name,
+    mealType,
+    days,
+    dailyRate : mealPrice,
+    totalCost : mealPrice*days
+  }
 }
 
 export function combinePlans(...plans) {
-  // Your code here
+  //  Rest parameter! Takes any number of plan objects
+  //  Agar koi plans nahi diye, return null
+  if(!Array.isArray(plans) || plans.length === 0) 
+    return null;
+  //  Each plan: { name, mealType, days, dailyRate, totalCost }
+  //  Return: { totalCustomers, totalRevenue, mealBreakdown }
+  //  mealBreakdown: { veg: count, nonveg: count, ... }
+
+  return plans.reduce((details, plan)=> {
+    const { name, mealType, days, dailyRate, totalCost } = plan
+
+    details.totalCustomers++;
+    details.totalRevenue += totalCost;
+    details.mealBreakdown[mealType]++;
+
+    return details;
+    
+  }, { totalCustomers : 0, totalRevenue : 0, mealBreakdown : { veg: 0, nonveg: 0,jain : 0 } })
+
 }
 
 export function applyAddons(plan, ...addons) {
-  // Your code here
+  //  Agar plan null hai, return null
+  if(typeof plan !== "object" || Array.isArray(plan) || !plan) return null
+  //  Agar plan null hai, return null
+  if(!Array.isArray(addons) || !addons) return null
+  //  plan: { name, mealType, days, dailyRate, totalCost }
+  //  Each addon: { name: "raita", price: 15 }
+  //  Add each addon price to dailyRate
+  //  Recalculate totalCost = new dailyRate * days
+  //  Return NEW plan object (don't modify original)
+    const copiedPlan = {...plan}
+
+    const {basePrice, addonNames} = addons.reduce((details,addon)=>{
+      details.addonNames.push(addon.name);
+      return {basePrice : (details.basePrice + addon.price), addonNames : details.addonNames}
+    }, {basePrice : plan.dailyRate, addonNames : []})
+
+    return {
+      ...copiedPlan,
+      dailyRate : basePrice,
+      totalCost : basePrice*plan.days,
+      addonNames
+    }
+  //  addonNames: array of addon names added
 }

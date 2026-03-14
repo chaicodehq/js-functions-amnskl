@@ -53,29 +53,89 @@
  *   // => { name: "Haldi", form: "powder", packed: true, label: "Haldi Masala" }
  */
 export function pipe(...fns) {
-  // Your code here
+  // Agar no functions given, return identity function (x => x)
+  if(fns.length === 0)
+    return x=>x;
+  // Takes any number of functions
+  // Returns a NEW function that applies them LEFT to RIGHT
+  // pipe(f, g, h)(x) means h(g(f(x)))
+  return (x) => {
+    fns.forEach(fun => {
+      x = fun(x);
+    });
+    return x;
+  }
 }
 
 export function compose(...fns) {
-  // Your code here
+  // Agar no functions given, return identity function (x => x)
+  if(fns.length === 0)
+    return x=>x;
+  // Takes any number of functions
+  // Returns a NEW function that applies them RIGHT to LEFT
+  // compose(f, g, h)(x) means f(g(h(x)))
+  return (x)=>{
+    for(let i = fns.length - 1; i>=0; i--){
+      x = fns[i](x);
+    }
+    return x;
+  }
 }
 
 export function grind(spice) {
-  // Your code here
+  //  Returns: { ...spice, form: "powder" }
+  return {...spice, form : "powder"}
 }
 
 export function roast(spice) {
-  // Your code here
+  //  Returns: { ...spice, roasted: true, aroma: "strong" }
+  return { ...spice, roasted: true, aroma: "strong" }
 }
 
 export function mix(spice) {
-  // Your code here
+  return {...spice, mixed: true }
 }
 
 export function pack(spice) {
-  // Your code here
+  return { ...spice, packed: true, label: `${spice.name} Masala` }
 }
 
 export function createRecipe(steps) {
-  // Your code here
+  //  Agar steps empty or not array, return identity function
+  if(!Array.isArray(steps) || steps.length === 0)
+    return x=>x
+  // steps: array of step name strings, e.g., ["grind", "roast", "pack"]
+  // Maps step names to functions: "grind"=>grind, "roast"=>roast,
+  // "mix"=>mix, "pack"=>pack
+  // Returns a piped function that applies steps in order
+  // Unknown step names are skipped
+  return (object)=>{
+    let arr = []
+    steps.forEach(step => {
+      switch (step) {
+        case "grind":
+          arr.push(grind)
+          break;
+      
+        case "roast":
+          arr.push(roast)
+          break;
+      
+        case "mix":
+          arr.push(mix)
+          break;
+      
+        case "pack":
+          arr.push(pack)
+          break;
+      
+        default:
+          break;
+      }
+    });
+    
+    return pipe(...arr)(object)
+    
+    
+  }
 }
